@@ -5,6 +5,8 @@ import java.util.*;
 
 //Modified implementation of Kosaraju's Algorithm:
 //Purpose: Linear time algorithm to find the strongly connected components of a directed graph
+//Algorithm can break down a graph into its Strongly Connected Components, ordered by descending finish time
+//Outputs the size of the sink SCC (the one that finishes first), else 0
 public class KosarajuSCC {
 
   int nodeCount;
@@ -28,8 +30,9 @@ public class KosarajuSCC {
     }
   }
 
+  //add a neighbor v at vertex u reference point, usage to create adjacency list graph
   void setNeighbor(int u, int v) {
-    adjList[u].add(v); //add a neighbor v at vertex u reference point
+    adjList[u].add(v);
   }
 
   void littleDFS(int vertex, boolean visitCheck[], Stack s) {
@@ -51,6 +54,7 @@ public class KosarajuSCC {
 
   void littleDFS2(int v1, boolean visitCheck[]) {
     nodesReached++;
+
     if (visitCheck[v1] == false) {
       visitCheck[v1] = true;
       Iterator<Integer> i = adjList[v1].iterator();
@@ -79,6 +83,7 @@ public class KosarajuSCC {
   }
 
 
+  //traverse to receive finishing times of depth first search
   void traverse(int v, boolean visited[]) {
     Stack s = new Stack();
     s.push(v);
@@ -109,6 +114,7 @@ public class KosarajuSCC {
       visited[i] = false;
     }
 
+    //push to stack based on finishing times of depth first search
     for (int i = 0; i < nodeCount; i++) {
       if (visited[i] == false) {
         traverse(i, visited);
@@ -116,7 +122,6 @@ public class KosarajuSCC {
     }
 
     int v = (int) sFinishingTime.pop();
-
     Stack s = new Stack();
     s.push(v);
     this.s1.push(v);
@@ -125,6 +130,7 @@ public class KosarajuSCC {
       visited[i] = false;
     }
 
+    //run inner depth first search to navigate across connected components
     while (!s.empty()) {
       int v2 = (int) s.pop();
 
@@ -167,7 +173,7 @@ public class KosarajuSCC {
       visited[i] = false;
     }
 
-    //run mini depth first search based on stack nodes to fully traverse
+    //run second depth first search based on stack to traverse in order of descending finish time
     while (s1.isEmpty() == false) {
       int v1 = (int) s1.pop();
 
@@ -176,7 +182,7 @@ public class KosarajuSCC {
       }
     }
 
-    //output size of strongly connected components, else 0
+    //output size of sink strongly connected component finishing first, else 0
     if (nodesReached == nodeCount) {
       System.out.println(sccSize);
     } else {
